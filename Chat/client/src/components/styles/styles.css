@@ -1,0 +1,26 @@
+.messages{
+    display: flex;
+    flex-direction: column;
+    overflow-y:scroll;
+    scrollbar-width: none;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.online {
+    background-color: green;
+}
+
+.offline {
+    background-color: red;
+}
