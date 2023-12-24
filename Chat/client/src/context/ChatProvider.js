@@ -8,6 +8,10 @@ const ChatProvider = ({ children }) => {
   const [notification, setNotification] = useState([]);
   const [checked, setChecked] = useState(false);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [videoCall, setVideoCall] = useState(null);
+  const [voiceCall, setVoiceCall] = useState(null);
+  const [incomingVoiceCall, setIncomingVoiceCall] = useState(null);
+  const [incomingVideoCall, setIncomingVideoCall] = useState(null);
 
   return (
     <ChatContext.Provider
@@ -22,6 +26,14 @@ const ChatProvider = ({ children }) => {
         setChecked,
         isSoundEnabled,
         setIsSoundEnabled,
+        videoCall,
+        setVideoCall,
+        voiceCall,
+        setVoiceCall,
+        incomingVoiceCall,
+        setIncomingVoiceCall,
+        incomingVideoCall,
+        setIncomingVideoCall,
       }}
     >
       {children}

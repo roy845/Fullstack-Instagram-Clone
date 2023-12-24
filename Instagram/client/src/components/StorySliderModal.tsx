@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { defaultProfilePic } from "../constants/paths";
-
+import { Close } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { deleteAllStories, getStoryByUserId, getUser } from "../Api/serverAPI";
 import { Story, User } from "../types";
@@ -112,6 +112,23 @@ const StorySliderModal: React.FC<StorySliderModalProps> = ({
     <>
       {Object.keys(story).length !== 0 ? (
         <StoryDialog open={open} setOpen={setOpen}>
+          <IconButton
+            onClick={() => {
+              setOpen(false);
+            }}
+            sx={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              backgroundColor: "transparent",
+              color: "red",
+              "&:hover": {
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            <Close />
+          </IconButton>
           {loading ? (
             <Spinner />
           ) : (

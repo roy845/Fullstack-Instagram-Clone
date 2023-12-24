@@ -19,6 +19,7 @@ def individual_serial_user(user) -> dict:
         },
         "blockedUsers": [serialize_object_id(obj) for obj in user.get("blockedUsers", [])],
         "isAdmin": bool(user.get("isAdmin", False)),
+        "timeSpentInApp": user.get("timeSpentInApp", {}),
         "notifications_enabled": bool(user.get("notifications_enabled", False)),
         "followings": user.get("followings", []),
         "followers": user.get("followers", []),

@@ -25,6 +25,8 @@ import SongsCarousel from "./SongsCarousel";
 import VideosCarousel from "./VideosCarousel";
 import { createPost } from "../Api/serverAPI";
 import { usePosts } from "../context/posts";
+import { Backdrop, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
   position: "absolute" as const,
@@ -374,8 +376,25 @@ const CreateModal = ({ open, setOpen }: CreateModalProps) => {
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      BackdropComponent={Backdrop}
+      BackdropProps={{
+        timeout: 500,
+      }}
     >
       <Box sx={style}>
+        <IconButton
+          sx={{
+            position: "absolute",
+            top: -30,
+            left: -30,
+            zIndex: 1,
+            color: "red",
+            cursor: "pointer",
+          }}
+          onClick={() => setOpen(false)}
+        >
+          <CloseIcon />
+        </IconButton>
         <Typography
           id="modal-modal-title"
           sx={{ textAlign: "center", mb: 2 }}

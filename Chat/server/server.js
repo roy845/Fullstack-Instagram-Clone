@@ -5,6 +5,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const connectDB = require("./config/dbConn");
 const routes = require("./routes");
+const path = require("path");
 
 dotenv.config();
 
@@ -12,11 +13,17 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(routes);
+app.use(express.static(path.join(__dirname, "build")));
 
 const PORT = process.env.PORT || 8800;
 
 connectDB();
+
 const server = app.listen(PORT, () => console.log(`Server Started on ${PORT}`));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./build/index.html"));
+});
 
 let users = [];
 
@@ -72,6 +79,41 @@ io.on("connection", (socket) => {
       }
       socket.in(user._id).emit("message received", newMessageReceived);
     });
+  });
+
+  socket.on("outgoing-voice-call", (data) => {
+    if (data.to) {
+      socket.to(data.to).emit("incoming-voice-call", {
+        from: data.from,
+        roomId: data.roomId,
+        callType: data.callType,
+      });
+    }
+  });
+  socket.on("outgoing-video-call", (data) => {
+    if (data.to) {
+      socket.to(data.to).emit("incoming-video-call", {
+        from: data.from,
+        roomId: data.roomId,
+        callType: data.callType,
+      });
+    }
+  });
+
+  socket.on("reject-voice-call", (data) => {
+    console.log(data.from);
+    if (data.from) {
+      socket.to(data.from).emit("voice-call-rejected");
+    }
+  });
+  socket.on("reject-video-call", (data) => {
+    if (data.from) {
+      socket.to(data.from).emit("video-call-rejected");
+    }
+  });
+
+  socket.on("accept-incoming-call", ({ id }) => {
+    socket.to(id).emit("accept-call");
   });
 
   socket.on("disconnect", () => {

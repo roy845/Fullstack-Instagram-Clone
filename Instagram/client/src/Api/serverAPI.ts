@@ -59,6 +59,14 @@ export const API_URLS = {
   addUsersToBlockedList: `${BASE_URL}users/addUsersToBlockedList/all`,
   removeUsersFromBlockedList: `${BASE_URL}users/removeUsersFromBlockedList/all`,
   searchBlockedListUsers: `${BASE_URL}users/searchBlockedListUsers/all`,
+  getAdminRoutes: `${BASE_URL}admin/`,
+  searchAllUsers: `${BASE_URL}admin/searchUsers`,
+  updateTimeSpentInApp: `${BASE_URL}users/updateTimeSpentInApp/all/`,
+  getTimeSpentInApp: `${BASE_URL}users/getTimeSpentInApp/`,
+  findAllUsers: `${BASE_URL}admin/findAllUsers/all`,
+  getNewUsers: `${BASE_URL}admin/getNewUsers/all`,
+  getUsersStats: `${BASE_URL}admin/getUsersStats/all`,
+  deleteUser: `${BASE_URL}admin/deleteUser/`,
 };
 
 export const register = (
@@ -552,6 +560,64 @@ export const searchBlockedListUsers = (
 ): Promise<AxiosResponse<any, any>> => {
   try {
     return axios.get(`${API_URLS.searchBlockedListUsers}?search=${query}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAdminRoutes = (): Promise<AxiosResponse<any, any>> => {
+  try {
+    return axios.get(API_URLS.getAdminRoutes);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const searchAllUsers = (
+  search: string
+): Promise<AxiosResponse<any, any>> => {
+  try {
+    return axios.get(`${API_URLS.searchUsers}?search=${search}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTimeSpentInApp = (userId: string) => {
+  try {
+    return axios.get(`${API_URLS.getTimeSpentInApp}${userId}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const findAllUsers = () => {
+  try {
+    return axios.get(`${API_URLS.findAllUsers}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getNewUsers = () => {
+  try {
+    return axios.get(`${API_URLS.getNewUsers}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUsersStats = () => {
+  try {
+    return axios.get(`${API_URLS.getUsersStats}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteUser = (userId: string) => {
+  try {
+    return axios.delete(`${API_URLS.deleteUser}${userId}`);
   } catch (error) {
     throw error;
   }

@@ -6,8 +6,9 @@ import { forgotPassword } from "../../Api/serverAPI";
 import { HTTP_404_NOT_FOUND } from "../../constants/httpStatusCodes";
 import toast from "react-hot-toast";
 import Spinner from "../../components/Spinner";
+import LockResetIcon from "@mui/icons-material/LockReset";
 
-export const ForgotPassword = () => {
+export const ForgotPassword = (): JSX.Element => {
   const [emailAddress, setEmailAddress] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -33,7 +34,7 @@ export const ForgotPassword = () => {
     document.title = "Forgot Password - Instagram";
   }, []);
 
-  const emailValidation = (
+  const emailValidation: JSX.Element = (
     <div className="mb-1">
       {emailAddress && isEmail(emailAddress) ? (
         <div className="flex items-center">
@@ -48,11 +49,12 @@ export const ForgotPassword = () => {
       ) : null}
     </div>
   );
+
   return (
     <div className="container flex mx-auto max-w-screen-md items-center h-screen pr-2">
       <div className="flex w-3/5">
         <img
-          src="/images/iphone-with-profile.jpg"
+          src="https://i.ibb.co/pXZcHyw/iphone-with-profile.jpg"
           alt="iPhone with Instagram app"
         />
       </div>
@@ -61,7 +63,7 @@ export const ForgotPassword = () => {
         <div className="flex flex-col items-center bg-white p-4 border border-gray-primary mb-4 rounded">
           <h1 className="flex justify-center w-full">
             <img
-              src="/images/logo.png"
+              src="https://i.ibb.co/myQsJpX/logo.png"
               alt="Instagram"
               className="mt-2 w-6/12 mb-4"
             />
@@ -73,7 +75,14 @@ export const ForgotPassword = () => {
             aria-label="Enter your email address"
             type="email"
             placeholder="Email address"
-            className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+            className={`text-sm text-gray-base w-full py-5 px-4 h-2 border rounded mb-2 ${
+              !isEmail(emailAddress) && emailAddress
+                ? "border-red-primary"
+                : isEmail(emailAddress) && emailAddress
+                ? "border-green-primary "
+                : "border-gray-primary"
+            }`}
+            // className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
             onChange={({ target }) => setEmailAddress(target.value)}
             value={emailAddress}
           />
@@ -85,7 +94,14 @@ export const ForgotPassword = () => {
             className={`bg-blue-medium ml-1 text-white w-full rounded h-8 font-bold
             ${isInvalid && "opacity-50 cursor-not-allowed"}`}
           >
-            {loading ? <Spinner sm /> : "Reset Password"}
+            {loading ? (
+              <Spinner sm />
+            ) : (
+              <>
+                <LockResetIcon sx={{ mr: 1 }} />
+                Reset Password
+              </>
+            )}
           </button>
         </div>
         <div className="flex justify-center items-center flex-col w-full bg-white p-4 rounded border border-gray-primary">

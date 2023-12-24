@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   FormControl,
+  IconButton,
   Modal,
   Stack,
   Switch,
@@ -25,6 +26,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import Spinner from "./Spinner";
 import { User } from "../types";
 import UserBadge from "./Userbadge";
+import CloseIcon from "@mui/icons-material/Close";
 import { HTTP_400_BAD_REQUEST } from "../constants/httpStatusCodes";
 
 interface SettingsModal {
@@ -232,6 +234,19 @@ function SettingsModal({ open, setOpen }: SettingsModal): ReactElement {
           },
         }}
       >
+        <IconButton
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 1,
+            color: "red",
+            cursor: "pointer",
+          }}
+          onClick={() => setOpen(false)}
+        >
+          <CloseIcon />
+        </IconButton>
         <h1 className="text-center font-bold mt-2 text-2xl">Settings</h1>
         <div className="flex items-center justify-center">
           <div>

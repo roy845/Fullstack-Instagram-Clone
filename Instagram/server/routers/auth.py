@@ -82,7 +82,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends()):
     serialized_user = individual_serial_user(user)
     # create token
     access_token = create_access_token(
-        data={"user_id": serialized_user["_id"]})
+        data={"user_id": serialized_user["_id"], "isAdmin": serialized_user["isAdmin"]})
 
     username = serialized_user["username"]
 

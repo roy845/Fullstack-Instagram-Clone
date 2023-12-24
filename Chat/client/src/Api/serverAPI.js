@@ -24,6 +24,7 @@ const API_URLS = {
   getUser: `${BASE_URL}api/users/getUser/`,
   updateUser: `${BASE_URL}api/users/updateUser/`,
   deleteGroup: `${BASE_URL}api/chat/deleteGroup/`,
+  generateToken: `${BASE_URL}api/auth/generateToken/`,
 };
 
 export const login = (email, password) => {
@@ -206,6 +207,14 @@ export const updateUser = (userId, updatedUser) => {
 export const deleteGroup = (chatId) => {
   try {
     return axios.delete(`${API_URLS.deleteGroup}${chatId}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const generateToken = (userId) => {
+  try {
+    return axios.get(`${API_URLS.generateToken}${userId}`);
   } catch (error) {
     throw error;
   }

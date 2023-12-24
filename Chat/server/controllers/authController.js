@@ -7,6 +7,7 @@ const {
   generateResetPasswordToken,
 } = require("../helpers/authHelper");
 const { sendEmailResetPassword } = require("../services/mailer");
+const { generateToken04 } = require("../utils/TokenGenerator");
 
 const registerController = asyncHandler(async (req, res) => {
   const { name, email, password, profilePic } = req.body;
@@ -124,9 +125,37 @@ const resetPasswordController = asyncHandler(async (req, res) => {
   }
 });
 
+const generateTokenController = async (req, res) => {
+  try {
+    const appId = parseInt(process.env.ZEGO_APP_ID);
+    const serverSecret = process.env.ZEGO_SERVER_ID;
+    const userId = req.params.userId;
+
+    const effectiveTime = 3600;
+    const payload = "";
+
+    if (appId && serverSecret && userId) {
+      const token = generateToken04(
+        appId,
+        userId,
+        serverSecret,
+        effectiveTime,
+        payload
+      );
+
+      res.status(200).json({ token });
+    } else {
+      res.status(400).send("User id, app id and server secret is required");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
   forgotPasswordController,
   resetPasswordController,
+  generateTokenController,
 };

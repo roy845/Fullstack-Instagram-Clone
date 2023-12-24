@@ -137,7 +137,7 @@ function Profile({}: Props) {
           user?._id === auth?.user?._id ? (
             <Photos photos={posts} />
           ) : auth?.user?._id !== user?._id ? (
-            <Unauthorized />
+            <Unauthorized follow />
           ) : null}
         </>
       )}

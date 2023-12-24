@@ -187,9 +187,11 @@ def update_user(user_id: str, updated_user: UpdateUser):
     update_data["$set"]["username"] = updated_user.username if updated_user.username else user["username"]
     update_data["$set"]["fullName"] = updated_user.fullName if updated_user.fullName else user["fullName"]
     update_data["$set"]["emailAddress"] = updated_user.emailAddress if updated_user.emailAddress else user["emailAddress"]
-    update_data["$set"]["isAdmin"] = updated_user.isAdmin if updated_user.isAdmin else user["isAdmin"]
-    update_data["$set"]["followers"] = updated_user.isAdmin if updated_user.isAdmin else user["followers"]
-    update_data["$set"]["followings"] = updated_user.isAdmin if updated_user.isAdmin else user["followings"]
+    update_data["$set"]["isAdmin"] = user["isAdmin"]
+    update_data["$set"]["followers"] = user["followers"]
+    update_data["$set"]["followings"] = user["followings"]
+    update_data["$set"]["timeSpentInApp"] = user["timeSpentInApp"]
+    update_data["$set"]["notifications_enabled"] = user["notifications_enabled"]
     update_data["$set"]["createdAt"] = user["createdAt"]
     update_data["$set"]["updatedAt"] = datetime.now()
 
@@ -516,3 +518,61 @@ def search_blocked_list_users(search: str, current_user: dict = Depends(get_curr
     except Exception as error:
         print(error)
         raise HTTPException(status_code=400, detail=str(error))
+
+
+@router.put("/updateTimeSpentInApp/all/{uid}")
+def update_time_spent(uid: str, timeSpentInApp: models.TimeSpentInApp):
+    try:
+        user = User.find_one({"_id": ObjectId(uid)})
+        if user:
+            time_entry_index = next(
+                (
+                    i
+                    for i, entry in enumerate(user["timeSpentInApp"])
+                    if entry["date"] == timeSpentInApp.date
+                ),
+                None,
+            )
+
+            if time_entry_index is not None:
+                # Update the time spent for the existing date
+                User.update_one(
+                    {"_id": ObjectId(
+                        uid), "timeSpentInApp.date": timeSpentInApp.date},
+                    {"$inc": {"timeSpentInApp.$.timeSpent": timeSpentInApp.timeSpent}},
+                )
+            else:
+                # Add a new time entry for the date
+                User.update_one(
+                    {"_id": ObjectId(uid)},
+                    {"$push": {"timeSpentInApp": {
+                        "date": timeSpentInApp.date, "timeSpent": timeSpentInApp.timeSpent}}},
+                )
+
+            return {"message": "Time spent updated successfully."}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
+
+
+@router.get("/getTimeSpentInApp/{uid}")
+def get_time_spent(uid: str):
+    try:
+        user = User.find_one({"_id":  ObjectId(uid)})
+
+        if user:
+            timeSpentInApp = user.get("timeSpentInApp", [])
+
+            return {"timeSpentInApp": timeSpentInApp}
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")

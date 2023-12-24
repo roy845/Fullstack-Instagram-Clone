@@ -4,6 +4,7 @@ const {
   loginController,
   forgotPasswordController,
   resetPasswordController,
+  generateTokenController,
 } = require("../controllers/authController");
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.post("/login", loginController);
 router.post("/forgotPassword", forgotPasswordController);
 //RESET PASSWORD || POST
 router.post("/resetPassword", resetPasswordController);
+//GENERATE TOKEN || GET
+router.get("/generateToken/:userId", generateTokenController);
 
 module.exports = router;

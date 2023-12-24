@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/auth";
 import { useChat } from "../context/ChatProvider";
-// import { ClickOutsideWrapper } from "react-click-outside";
 import {
   Box,
   Button,
@@ -46,14 +45,16 @@ import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { SendIcon } from "../icons/icons";
 import { AttachmentIcon } from "@chakra-ui/icons";
-import { FaVideo, FaCamera, FaPlus, FaSmile, FaPhone } from "react-icons/fa";
+import { FaVideo, FaCamera, FaPlus, FaSmile } from "react-icons/fa";
 import ChatProfileModal from "./miscellaneous/ChatProfileModal";
 import { Icon } from "@chakra-ui/react";
 import WebcamCapture from "./WebcamCapture";
 import WebcamStreamCapture from "./WebcamStreamCapture";
+import { MdKeyboardVoice } from "react-icons/md";
+import CaptureAudio from "./CaptureAudio";
 
 const ENDPOINT = "http://localhost:8800";
-let socket, selectedChatCompare;
+export let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { auth, setActiveUsers, activeUsers } = useAuth();
@@ -69,6 +70,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     notification,
     setNotification,
     isSoundEnabled,
+    setVoiceCall,
+    setVideoCall,
+    setIncomingVoiceCall,
+    setIncomingVideoCall,
   } = useChat();
   const [open, setOpen] = useState(false);
 
@@ -82,6 +87,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isWebCamOpen, setIsWebCamOpen] = useState(false);
   const [isWebCamStreamOpen, setIsWebCamStreamOpen] = useState(false);
+  const [showAudioRecorder, setShowAudioRecorder] = useState(false);
 
   const emojiPickerRef = useRef(null);
 
@@ -117,17 +123,38 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.emit("setup", auth);
     socket.on("connected", () => setSocketConnected(true));
     socket.on("getUsers", (users) => {
-      localStorage.setItem("activeUsers", JSON.stringify(users));
-      setActiveUsers(JSON.parse(localStorage.getItem("activeUsers")));
+      localStorage.setItem("activeUsersChat", JSON.stringify(users));
+      setActiveUsers(JSON.parse(localStorage.getItem("activeUsersChat")));
     });
     socket.on("typing", () => setisTyping(true));
     socket.on("stop typing", () => setisTyping(false));
 
+    socket.on("incoming-voice-call", ({ from, roomId, callType }) => {
+      setIncomingVoiceCall({ ...from, roomId, callType });
+    });
+    socket.on("incoming-video-call", ({ from, roomId, callType }) => {
+      setIncomingVideoCall({ ...from, roomId, callType });
+    });
+
+    socket.on("voice-call-rejected", () => {
+      setVoiceCall(null);
+      setVideoCall(null);
+      setIncomingVideoCall(null);
+      setIncomingVoiceCall(null);
+    });
+
+    socket.on("video-call-rejected", () => {
+      setVoiceCall(null);
+      setVideoCall(null);
+      setIncomingVideoCall(null);
+      setIncomingVoiceCall(null);
+    });
+
     return () => {
       socket.disconnect();
       socket.on("getUsers", (users) => {
-        localStorage.setItem("activeUsers", JSON.stringify(users));
-        setActiveUsers(JSON.parse(localStorage.getItem("activeUsers")));
+        localStorage.setItem("activeUsersChat", JSON.stringify(users));
+        setActiveUsers(JSON.parse(localStorage.getItem("activeUsersChat")));
       });
     };
   }, []);
@@ -332,6 +359,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  const onCaptureRecording = (mp3File) => {
+    if (mp3File) {
+      setNewMessage((prev) => `${prev} ${mp3File.name}`);
+      setFile(mp3File);
+    }
+  };
+
   const searchMessages = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -354,6 +388,32 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
+
+  const handleVoiceCall = () => {
+    const whoToCall =
+      auth?._id === selectedChat.users[1]._id
+        ? selectedChat.users[0]
+        : selectedChat.users[1];
+    setVoiceCall({
+      ...whoToCall,
+      type: "out-going",
+      callType: "audio",
+      roomId: Date.now(),
+    });
+  };
+
+  const handleVideoCall = () => {
+    const whoToCall =
+      auth?._id === selectedChat.users[1]._id
+        ? selectedChat.users[0]
+        : selectedChat.users[1];
+    setVideoCall({
+      ...whoToCall,
+      type: "out-going",
+      callType: "video",
+      roomId: Date.now(),
+    });
+  };
 
   return (
     <>
@@ -418,10 +478,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 ) : (
                   <Stack direction="row">
                     <Tooltip label="Make Voice Call">
-                      <IconButton icon={<PhoneIcon />} onClick={() => {}} />
+                      <IconButton
+                        icon={<PhoneIcon />}
+                        onClick={handleVoiceCall}
+                      />
                     </Tooltip>
                     <Tooltip label="Make Video Call">
-                      <IconButton icon={<FaVideo />} onClick={() => {}} />
+                      <IconButton
+                        icon={<FaVideo />}
+                        onClick={handleVideoCall}
+                      />
                     </Tooltip>
                     <Tooltip label="Search messages">
                       <IconButton
@@ -532,13 +598,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
               <Flex>
                 <Menu>
-                  <Tooltip label="Attach">
-                    <MenuButton
-                      mr={2}
-                      as={IconButton}
-                      icon={<Icon as={FaPlus} />}
-                    />
-                  </Tooltip>
+                  {!showAudioRecorder && (
+                    <Tooltip label="Attach">
+                      <MenuButton
+                        mr={2}
+                        as={IconButton}
+                        icon={<Icon as={FaPlus} />}
+                      />
+                    </Tooltip>
+                  )}
 
                   <MenuList>
                     <MenuItem>
@@ -585,28 +653,42 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     </MenuItem>
                   </MenuList>
                 </Menu>
-
-                <Input
-                  variant="filled"
-                  bg="#ffffff"
-                  placeholder="Enter a message.."
-                  value={newMessage}
-                  onChange={typingHandler}
-                  flex="1"
-                />
-
-                {newMessage && (
-                  <Tooltip label="Send Message">
-                    <Button
-                      ml={2}
-                      onClick={() => {
-                        setIsPressedSend(true);
-                        sendMessage();
-                      }}
-                    >
-                      <SendIcon />
+                {showAudioRecorder && (
+                  <CaptureAudio
+                    hide={setShowAudioRecorder}
+                    onCaptureRecording={onCaptureRecording}
+                  />
+                )}
+                {!showAudioRecorder && (
+                  <Input
+                    variant="filled"
+                    bg="#ffffff"
+                    placeholder="Enter a message.."
+                    value={newMessage}
+                    onChange={typingHandler}
+                    flex="1"
+                  />
+                )}
+                {!newMessage && !showAudioRecorder ? (
+                  <Tooltip label="Record voice">
+                    <Button ml={2} onClick={() => setShowAudioRecorder(true)}>
+                      <MdKeyboardVoice size={28} />
                     </Button>
                   </Tooltip>
+                ) : (
+                  newMessage && (
+                    <Tooltip label="Send Message">
+                      <Button
+                        ml={2}
+                        onClick={() => {
+                          setIsPressedSend(true);
+                          sendMessage();
+                        }}
+                      >
+                        <SendIcon size={28} />
+                      </Button>
+                    </Tooltip>
+                  )
                 )}
               </Flex>
             </FormControl>
@@ -704,6 +786,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           setOpen={setIsWebCamStreamOpen}
         />
       )}
+      {/* {showAudioRecorder && (
+        <CaptureAudio
+          hide={setShowAudioRecorder}
+          onCaptureRecording={onCaptureRecording}
+        />
+      )} */}
     </>
   );
 };

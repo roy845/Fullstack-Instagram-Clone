@@ -77,13 +77,14 @@ const ScrollableChat = ({ messages, searchQuery }) => {
                     justifyContent: "center",
                   }}
                 >
-                  {m.file.filetype === "application/octet-stream" && (
-                    <FileDownload
-                      filename={m.file.filename}
-                      filesize={m.file.filesize}
-                      imgSrc={RarLogo}
-                    />
-                  )}
+                  {m.file.filetype === "application/octet-stream" &&
+                    m.file.filename.split(".").pop() !== "mp3" && (
+                      <FileDownload
+                        filename={m.file.filename}
+                        filesize={m.file.filesize}
+                        imgSrc={RarLogo}
+                      />
+                    )}
                   {m.file.filetype === "application/x-zip-compressed" && (
                     <FileDownload
                       filename={m.file.filename}
@@ -155,6 +156,13 @@ const ScrollableChat = ({ messages, searchQuery }) => {
                       filesize={m.file.filesize}
                     />
                   )}
+                  {m.file.filetype === "application/octet-stream" &&
+                    m.file.filename.split(".").pop() === "mp3" && (
+                      <AudioMessage
+                        filename={m.file.filename}
+                        filesize={m.file.filesize}
+                      />
+                    )}
                 </div>
               )}
 

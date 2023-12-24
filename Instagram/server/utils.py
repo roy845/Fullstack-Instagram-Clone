@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-BASE_URL = "http://localhost:3000/"
+BASE_URL = "http://localhost:8000/"
 
 
 def hash(password: str) -> str:

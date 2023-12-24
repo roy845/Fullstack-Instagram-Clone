@@ -36,7 +36,11 @@ const UnauthorizedMessage = styled(Typography)({
   marginTop: 8,
 });
 
-const Unauthorized = () => {
+interface UnauthorizedProps {
+  follow?: boolean;
+}
+
+const Unauthorized: React.FC<UnauthorizedProps> = ({ follow }) => {
   return (
     <UnauthorizedCard>
       <UnauthorizedHeader
@@ -45,8 +49,8 @@ const Unauthorized = () => {
       <UnauthorizedContent>
         <UnauthorizedIcon />
         <UnauthorizedMessage variant="body1">
-          You do not have permission to access this page. Follow this user to
-          see it's content
+          You do not have permission to access this page.
+          {follow && <>Follow this user to see its content.</>}
         </UnauthorizedMessage>
       </UnauthorizedContent>
     </UnauthorizedCard>

@@ -20,7 +20,7 @@ const SplashScreen: React.FC<SplashScreenProps> = () => {
   return (
     <div style={containerStyle}>
       <img
-        src={"/splash-instagram.gif"}
+        src={"https://s13.gifyu.com/images/SjwwK.gif"}
         alt="Instagram splash screen"
         style={imageStyle}
       />

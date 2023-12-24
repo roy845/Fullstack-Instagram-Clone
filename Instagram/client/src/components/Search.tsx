@@ -48,7 +48,7 @@ const SearchDrawer: React.FC<SearchDrawerProps> = ({ isOpen, onClose }) => {
 
       <div className="fixed inset-y-0 right-0 max-w-full flex">
         <div className="relative w-screen max-w-md">
-          <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+          <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll-hidden">
             {/* Search Header */}
             <div className="p-4 border-b">
               <button className="float-right" onClick={onClose}>

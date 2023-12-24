@@ -3,25 +3,31 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 import { resetPassword } from "../../Api/serverAPI";
 import { HTTP_400_BAD_REQUEST } from "../../constants/httpStatusCodes";
 import toast from "react-hot-toast";
-
 import {
   Link,
   NavigateFunction,
   useNavigate,
   useParams,
 } from "react-router-dom";
+import LockResetIcon from "@mui/icons-material/LockReset";
 
-export const ResetPassword = () => {
+export const ResetPassword = (): JSX.Element => {
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [passwordsMatch, setPasswordsMatch] = useState<boolean | null>(null);
   const [passwordEntered, setPasswordEntered] = useState(false);
   const [error, setError] = useState<string>("");
-  const isInvalid = !newPassword;
+  const isInvalid: boolean =
+    !newPassword ||
+    !confirmPassword ||
+    !passwordsMatch ||
+    newPassword.length < 6;
   const { token } = useParams();
   const navigate: NavigateFunction = useNavigate();
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     const enteredPassword = e.target.value;
     setConfirmPassword(enteredPassword);
 
@@ -39,7 +45,7 @@ export const ResetPassword = () => {
     setPasswordEntered(enteredPassword.length > 0);
   };
 
-  const handleResetPassword = async () => {
+  const handleResetPassword = async (): Promise<void> => {
     try {
       const { data } = await resetPassword(newPassword, token!);
       toast.success(data.message, { position: "bottom-left" });
@@ -64,7 +70,7 @@ export const ResetPassword = () => {
     document.title = "Reset Password - Instagram";
   }, []);
 
-  const passwordsValidations = (
+  const passwordsValidations: JSX.Element = (
     <div className="flex items-center mb-1">
       {passwordEntered && (
         <>
@@ -86,11 +92,29 @@ export const ResetPassword = () => {
     </div>
   );
 
+  const passwordValidation: JSX.Element = (
+    <div className="mb-1">
+      {newPassword && newPassword.length >= 6 ? (
+        <div className="flex items-center">
+          <FaCheck style={{ color: "green" }} />
+          <span className="text-green-primary ml-2">Valid Password</span>
+        </div>
+      ) : newPassword && newPassword.length < 6 ? (
+        <div className="flex items-center">
+          <FaTimes style={{ color: "red" }} />
+          <span className="text-red-primary ml-2">
+            Password must be at least 6 characters long
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+
   return (
     <div className="container flex mx-auto max-w-screen-md items-center h-screen pr-2">
       <div className="flex w-3/5">
         <img
-          src="/images/iphone-with-profile.jpg"
+          src="https://i.ibb.co/pXZcHyw/iphone-with-profile.jpg"
           alt="iPhone with Instagram app"
         />
       </div>
@@ -99,7 +123,7 @@ export const ResetPassword = () => {
         <div className="flex flex-col items-center bg-white p-4 border border-gray-primary mb-4 rounded">
           <h1 className="flex justify-center w-full">
             <img
-              src="/images/logo.png"
+              src="https://i.ibb.co/myQsJpX/logo.png"
               alt="Instagram"
               className="mt-2 w-6/12 mb-4"
             />
@@ -111,15 +135,30 @@ export const ResetPassword = () => {
             aria-label="Enter your new password"
             type="password"
             placeholder="Enter your new password"
-            className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+            className={`text-sm text-gray-base w-full py-5 px-4 h-2 border rounded mb-2 ${
+              newPassword.length < 6 && newPassword
+                ? "border-red-primary"
+                : newPassword.length >= 6 && newPassword
+                ? "border-green-primary "
+                : "border-gray-primary"
+            }`}
+            // className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
             onChange={({ target }) => setNewPassword(target.value)}
             value={newPassword}
           />
+          {passwordValidation}
           <input
             aria-label="Confirm your new password"
             type="password"
             placeholder="Confirm your new password"
-            className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+            className={`text-sm text-gray-base w-full py-5 px-4 h-2 border rounded mb-2 ${
+              !passwordsMatch && newPassword
+                ? "border-red-primary"
+                : passwordsMatch && newPassword
+                ? "border-green-primary "
+                : "border-gray-primary"
+            }`}
+            // className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
             onChange={handlePasswordChange}
             value={confirmPassword}
           />
@@ -132,7 +171,10 @@ export const ResetPassword = () => {
             className={`bg-blue-medium ml-1 text-white w-full rounded h-8 font-bold
             ${isInvalid && "opacity-50 cursor-not-allowed"}`}
           >
-            Reset Password
+            <>
+              <LockResetIcon sx={{ mr: 1 }} />
+              Reset Password
+            </>
           </button>
           <div className="flex justify-center items-center flex-col w-full bg-white p-4 rounded border border-gray-primary mt-2">
             <p className="text-sm">

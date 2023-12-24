@@ -386,11 +386,11 @@ const PostPage: React.FC<Props> = () => {
       open={true}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      // sx={{
+      //   display: "flex",
+      //   alignItems: "center",
+      //   justifyContent: "center",
+      // }}
     >
       {loading ? (
         <Box
@@ -448,23 +448,23 @@ const PostPage: React.FC<Props> = () => {
                 </Menu>
               )}
 
-              <Button
+              <IconButton
                 onClick={() => {
                   navigate(-1);
                 }}
                 sx={{
                   position: "absolute",
-                  left: -15,
-                  top: 65,
+                  left: 0,
+                  top: 0,
                   backgroundColor: "transparent",
-                  color: "#000",
+                  color: "red",
                   "&:hover": {
                     backgroundColor: "transparent",
                   },
                 }}
               >
                 <Close />
-              </Button>
+              </IconButton>
               <Tooltip title={post?.user?.username}>
                 <Link
                   to={`/profile/${post?.user?.username}/${post?.user?._id}`}

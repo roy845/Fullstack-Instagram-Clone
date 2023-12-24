@@ -7,7 +7,12 @@ import CreateModal from "./CreateModal";
 import { Avatar, Badge } from "@mui/material";
 import { useUsers } from "../context/users";
 import { useSocket } from "../context/socket";
-import { Notifications, Settings } from "@mui/icons-material";
+import {
+  AdminPanelSettings,
+  Analytics,
+  Notifications,
+  Settings,
+} from "@mui/icons-material";
 import toast from "react-hot-toast";
 import {
   createMentionNotification,
@@ -26,6 +31,8 @@ export const RightBar = (): JSX.Element => {
   const navigate: NavigateFunction = useNavigate();
   const { auth, setAuth } = useAuth();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isScrollable, setIsScrollable] = useState<boolean>(false);
+
   const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
   const [isOpenSettingsModal, setIsOpenSettingsModal] =
     useState<boolean>(false);
@@ -86,13 +93,15 @@ export const RightBar = (): JSX.Element => {
   }, []);
 
   return (
-    <header className="h-screen bg-gray-background border-r z-10 border-gray-primary fixed top-0 right-0 border border-left-black-light">
+    <header
+      className={`h-screen bg-gray-background border-r z-10 border-gray-primary fixed top-0 right-0 border border-left-black-light ${"visible overflow-y-auto"}`}
+    >
       <div className="flex flex-col justify-between">
         <div className="text-gray-700 text-center flex items-end cursor-pointer">
           <div className="flex justify-end pr-4 mb-5 w-full">
             <Link to={"/"} aria-label="Instagram logo">
               <img
-                src="/images/logo.png"
+                src="https://i.ibb.co/myQsJpX/logo.png"
                 alt="Instagram"
                 className="mt-3 w-6/12 mx-auto"
               />
@@ -132,7 +141,7 @@ export const RightBar = (): JSX.Element => {
           </button>
 
           <button
-            onClick={() => window.open("http://localhost:3001")}
+            onClick={() => window.open("http://localhost:8800")}
             className="flex items-center justify-end h-10 hover:text-white hover:bg-blue-primary rounded-lg w-full"
           >
             <span className="mr-2 hover:text-white">Chats</span>
@@ -156,6 +165,24 @@ export const RightBar = (): JSX.Element => {
 
             <Settings className="mr-2 hover:text-white" />
           </button>
+          <button
+            onClick={() => navigate("/statistics")}
+            className="flex items-center justify-end h-10 hover:text-white hover:bg-blue-primary rounded-lg w-full"
+          >
+            <span className="mr-2 hover:text-white">Analytics</span>
+
+            <Analytics className="mr-2 hover:text-white" />
+          </button>
+          {auth?.user?.isAdmin && (
+            <button
+              onClick={() => navigate("/admin")}
+              className="flex items-center justify-end h-10 hover:text-white hover:bg-blue-primary rounded-lg w-full"
+            >
+              <span className="mr-2 hover:text-white">Admin</span>
+
+              <AdminPanelSettings className="mr-2 hover:text-white" />
+            </button>
+          )}
           <button
             type="button"
             className="flex items-center justify-end h-10 hover:text-white hover:bg-blue-primary rounded-lg w-full"

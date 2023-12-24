@@ -8,19 +8,22 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/auth";
 import { HTTP_403_FORBIDDEN } from "../../constants/httpStatusCodes";
 import Spinner from "../../components/Spinner";
+import LoginIcon from "@mui/icons-material/Login";
+import { Auth } from "../../types";
 
-export const Login = () => {
+export const Login = (): JSX.Element => {
   const [emailAddress, setEmailAddress] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const { auth, setAuth, setLoadingSplashScreen } = useAuth();
 
-  const isInvalid = !isEmail(emailAddress) || !password || !emailAddress;
+  const isInvalid: boolean =
+    !isEmail(emailAddress) || !password || !emailAddress || password.length < 6;
 
   const handleLogin = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  ): Promise<void> => {
     e.preventDefault();
     const formDataObject: FormData = new FormData();
     formDataObject.append("username", emailAddress);
@@ -38,7 +41,7 @@ export const Login = () => {
         user: data.user,
       });
 
-      const authData = {
+      const authData: Auth = {
         access_token: data.access_token,
         token_type: data.token_type,
         user: data.user,
@@ -58,7 +61,7 @@ export const Login = () => {
     document.title = "Login - Instagram";
   }, []);
 
-  const emailValidation = (
+  const emailValidation: JSX.Element = (
     <div className="mb-1">
       {emailAddress && isEmail(emailAddress) ? (
         <div className="flex items-center">
@@ -74,7 +77,27 @@ export const Login = () => {
     </div>
   );
 
-  const handleKeyPress = async (e: React.KeyboardEvent<HTMLButtonElement>) => {
+  const passwordValidation: JSX.Element = (
+    <div className="mb-1">
+      {password && password.length >= 6 ? (
+        <div className="flex items-center">
+          <FaCheck style={{ color: "green" }} />
+          <span className="text-green-primary ml-2">Valid Password</span>
+        </div>
+      ) : password && password.length < 6 ? (
+        <div className="flex items-center">
+          <FaTimes style={{ color: "red" }} />
+          <span className="text-red-primary ml-2">
+            Password must be at least 6 characters long
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+
+  const handleKeyPress = async (
+    e: React.KeyboardEvent<HTMLButtonElement>
+  ): Promise<void> => {
     if (e.key === "Enter") {
       e.preventDefault();
       const formDataObject: FormData = new FormData();
@@ -93,7 +116,7 @@ export const Login = () => {
           user: data.user,
         });
 
-        const authData = {
+        const authData: Auth = {
           access_token: data.access_token,
           token_type: data.token_type,
           user: data.user,
@@ -114,7 +137,7 @@ export const Login = () => {
     <div className="container flex mx-auto max-w-screen-md items-center h-screen pr-2">
       <div className="flex w-3/5">
         <img
-          src="/images/iphone-with-profile.jpg"
+          src="https://i.ibb.co/pXZcHyw/iphone-with-profile.jpg"
           alt="iPhone with Instagram app"
         />
       </div>
@@ -123,7 +146,7 @@ export const Login = () => {
         <div className="flex flex-col items-center bg-white p-4 border border-gray-primary mb-4 rounded">
           <h1 className="flex justify-center w-full">
             <img
-              src="/images/logo.png"
+              src="https://i.ibb.co/myQsJpX/logo.png"
               alt="Instagram"
               className="mt-2 w-6/12 mb-4"
             />
@@ -136,7 +159,14 @@ export const Login = () => {
             type="email"
             disabled={loading}
             placeholder="Email address"
-            className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+            className={`text-sm text-gray-base w-full py-5 px-4 h-2 border rounded mb-2 ${
+              !isEmail(emailAddress) && emailAddress
+                ? "border-red-primary"
+                : isEmail(emailAddress) && emailAddress
+                ? "border-green-primary "
+                : "border-gray-primary"
+            }`}
+            // className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
             onChange={({ target }) => setEmailAddress(target.value)}
             value={emailAddress}
           />
@@ -146,10 +176,18 @@ export const Login = () => {
             type="password"
             disabled={loading}
             placeholder="Password"
-            className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+            className={`text-sm text-gray-base w-full py-5 px-4 h-2 border rounded mb-2 ${
+              password.length < 6 && password
+                ? "border-red-primary"
+                : password.length >= 6 && password
+                ? "border-green-primary "
+                : "border-gray-primary"
+            }`}
+            // className="text-sm text-gray-base w-full py-5 px-4 h-2 border border-gray-primary rounded mb-2"
             onChange={({ target }) => setPassword(target.value)}
             value={password}
           />
+          {passwordValidation}
           <button
             disabled={isInvalid}
             type="button"
@@ -158,12 +196,18 @@ export const Login = () => {
             onClick={handleLogin}
             onKeyDown={handleKeyPress}
           >
-            {loading ? <Spinner sm /> : "Login"}
+            {loading ? (
+              <Spinner sm />
+            ) : (
+              <>
+                <LoginIcon /> Login
+              </>
+            )}
           </button>
         </div>
         <div className="flex justify-center items-center flex-col w-full bg-white p-4 rounded border border-gray-primary">
           <p className="text-sm">
-            Don't have an account ?{" "}
+            Don't have an account ?
             <Link to={"/signup"} className="font-bold text-blue-medium">
               Sign up
             </Link>

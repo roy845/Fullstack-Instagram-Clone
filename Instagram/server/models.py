@@ -37,6 +37,11 @@ class PictureProfile(BaseModel):
         return {"id": self.id, "url": self.url}
 
 
+class TimeSpentInApp(BaseModel):
+    date: str = ""
+    timeSpent: int = 0
+
+
 class CreateUser(BaseModel):
     username: str
     fullName: str
@@ -50,10 +55,22 @@ class CreateUser(BaseModel):
         "url": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
         "publish": False
     }
+    timeSpentInApp: TimeSpentInApp = []
 
 
-class UpdateUser(CreateUser):
-    pass
+class UpdateUser(BaseModel):
+    username: str
+    fullName: str
+    password: str
+    emailAddress: EmailStr
+    isAdmin: bool = False
+    followings: list = []
+    followers: list = []
+    profilePic: PictureProfile = {
+        "id": ObjectId(),
+        "url": "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+        "publish": False
+    }
 
 
 class CreatePhoto(BaseModel):

@@ -1,10 +1,19 @@
-import { StringNullableChain } from "lodash";
+export type UserStats = {
+  name: string;
+  "New User": number;
+};
 
 type ProfilePicture = {
   id: string;
   url: string;
   publish: boolean;
 };
+
+export type TimeSpentInApp = {
+  date: string;
+  timeSpent: number;
+};
+
 export interface User {
   _id: string;
   fullName: string;
